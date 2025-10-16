@@ -3,13 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "reac
 import api from "../api/api";
 
 export default function RegisterScreen({ navigation }) {
-  const [nome, setNome] = useState("");
+  const [name, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [password, setSenha] = useState("");
 
   const handleRegister = async () => {
     try {
-      const response = await api.post("/auth/register", { nome, email, senha });
+      const response = await api.post("/auth/register", { name, email, password });
       Alert.alert("Sucesso", response.data.message || "Usuário registrado!");
       navigation.navigate("Login");
     } catch (error) {
@@ -25,9 +25,9 @@ export default function RegisterScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Criar Conta</Text>
 
-      <TextInput style={styles.input} placeholder="Nome" value={nome} onChangeText={setNome} />
+      <TextInput style={styles.input} placeholder="Nome" value={name} onChangeText={setNome} />
       <TextInput style={styles.input} placeholder="E-mail" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-      <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={senha} onChangeText={setSenha} />
+      <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={password} onChangeText={setSenha} />
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Registrar</Text>

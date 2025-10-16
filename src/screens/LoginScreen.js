@@ -4,14 +4,14 @@ import api from "../api/api";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [password, setSenha] = useState("");
 
   const handleLogin = async () => {
     try {
-      const response = await api.post("/auth/login", { email, senha });
+      const response = await api.post("/auth/login", { email, password });
       const { token, user } = response.data;
 
-      Alert.alert("Sucesso", `Bem-vindo, ${user.nome || user.email}!`);
+      Alert.alert("Sucesso", `Bem-vindo, ${user.name || user.email}!`);
       console.log("Token JWT:", token);
 
       navigation.replace("Home");
@@ -41,7 +41,7 @@ export default function LoginScreen({ navigation }) {
         style={styles.input}
         placeholder="Senha"
         secureTextEntry
-        value={senha}
+        value={password}
         onChangeText={setSenha}
       />
 
