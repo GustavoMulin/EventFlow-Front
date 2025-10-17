@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator, Alert, StyleSheet } from "react-native";
+import { View, Text, FlatList, ActivityIndicator, Alert, StyleSheet, Button } from "react-native";
 import api from "../api/api";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [eventos, setEventos] = useState([]);
   const [loading, setLoading] = useState(true);
 

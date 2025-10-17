@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import api from "../api/api";
 
 export default function RegisterScreen({ navigation }) {
@@ -22,21 +22,23 @@ export default function RegisterScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Criar Conta</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Criar Conta</Text>
 
-      <TextInput style={styles.input} placeholder="Nome" value={name} onChangeText={setNome} />
-      <TextInput style={styles.input} placeholder="E-mail" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-      <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={password} onChangeText={setSenha} />
+        <TextInput style={styles.input} placeholder="Nome" value={name} onChangeText={setNome} />
+        <TextInput style={styles.input} placeholder="E-mail" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+        <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={password} onChangeText={setSenha} />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrar</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Registrar</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.link}>Já tem conta? Entrar</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.link}>Já tem conta? Entrar</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 

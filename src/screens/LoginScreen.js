@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import api from "../api/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -9,58 +10,60 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     try {
       const response = await api.post("/auth/login", { email, password });
-      const { token, user } = response.data;
+      console.log("Resposta da API:", response.data);
 
-      Alert.alert("Sucesso", `Bem-vindo, ${user.name || user.email}!`);
-      console.log("Token JWT:", token);
 
+      const { user, token } = response.data;
+
+      await AsyncStorage.setItem("user", JSON.stringify(user));
+      await AsyncStorage.setItem("token", token);
+
+      Alert.alert("Sucesso", `Bem-vindo, ${user.name}!`);
       navigation.replace("Home");
+
     } catch (error) {
       console.log(error);
-      Alert.alert(
-        "Erro",
-        error.response?.data?.message || "Falha ao fazer login"
-      );
+      Alert.alert("Erro", "Email ou senha incorretos.");
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>EventFlow</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Login</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="E-mail"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        secureTextEntry
-        value={password}
-        onChangeText={setSenha}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          secureTextEntry
+          value={password}
+          onChangeText={setSenha}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Entrar</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.link}>Não tem conta? Cadastre-se</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+          <Text style={styles.link}>Não tem conta? Cadastre-se</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 25, backgroundColor: "#fff" },
-  title: { fontSize: 32, fontWeight: "bold", marginBottom: 40, textAlign: "center", color: "#007AFF" },
-  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 10, padding: 12, marginBottom: 15, fontSize: 16 },
-  button: { backgroundColor: "#007AFF", padding: 14, borderRadius: 10 },
-  buttonText: { color: "#fff", textAlign: "center", fontSize: 18, fontWeight: "bold" },
-  link: { textAlign: "center", marginTop: 15, color: "#007AFF", fontWeight: "500" },
+  container: { flex: 1, justifyContent: "center", padding: 20 },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 10, marginBottom: 10 },
+  button: { backgroundColor: "#007AFF", padding: 15, borderRadius: 8 },
+  buttonText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
+  link: { color: "#007AFF", textAlign: "center", marginTop: 15 },
 });
