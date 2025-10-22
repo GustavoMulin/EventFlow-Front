@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import api from "../api/api";
 
 export default function RegisterScreen({ navigation }) {
@@ -9,15 +9,11 @@ export default function RegisterScreen({ navigation }) {
 
   const handleRegister = async () => {
     try {
-      const response = await api.post("/auth/register", { name, email, password });
-      Alert.alert("Sucesso", response.data.message || "Usuário registrado!");
+      await api.post("/auth/register", { name, email, password });
+      Alert.alert("Sucesso", "Usuário registrado!");
       navigation.navigate("Login");
     } catch (error) {
-      console.log(error);
-      Alert.alert(
-        "Erro",
-        error.response?.data?.message || "Falha ao registrar usuário."
-      );
+      Alert.alert("Erro", "Não foi possível registrar o usuário.");
     }
   };
 
@@ -25,17 +21,14 @@ export default function RegisterScreen({ navigation }) {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text style={styles.title}>Criar Conta</Text>
-
         <TextInput style={styles.input} placeholder="Nome" value={name} onChangeText={setNome} />
-        <TextInput style={styles.input} placeholder="E-mail" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+        <TextInput style={styles.input} placeholder="E-mail" value={email} onChangeText={setEmail} />
         <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={password} onChangeText={setSenha} />
-
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Registrar</Text>
+          <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
-
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.link}>Já tem conta? Entrar</Text>
+          <Text style={styles.link}>Já tem conta? Faça login</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -43,10 +36,17 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 25, backgroundColor: "#fff" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 40, textAlign: "center", color: "#007AFF" },
-  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 10, padding: 12, marginBottom: 15, fontSize: 16 },
-  button: { backgroundColor: "#007AFF", padding: 14, borderRadius: 10 },
-  buttonText: { color: "#fff", textAlign: "center", fontSize: 18, fontWeight: "bold" },
-  link: { textAlign: "center", marginTop: 15, color: "#007AFF", fontWeight: "500" },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#fff" },
+  title: { fontSize: 24, color: "#007AFF", fontWeight: "bold", marginBottom: 20 },
+  input: {
+    width: "80%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 25,
+    padding: 12,
+    marginBottom: 15,
+  },
+  button: { backgroundColor: "#007AFF", width: "80%", padding: 12, borderRadius: 25, alignItems: "center" },
+  buttonText: { color: "#fff", fontWeight: "bold" },
+  link: { marginTop: 15, color: "#007AFF" },
 });

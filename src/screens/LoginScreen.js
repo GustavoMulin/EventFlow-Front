@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, KeyboardAvoidingView, Platform } from "react-native";
 import api from "../api/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -10,31 +9,23 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     try {
       const response = await api.post("/auth/login", { email, password });
-      console.log("Resposta da API:", response.data);
-
-
-      const { user, token } = response.data;
-
-      await AsyncStorage.setItem("user", JSON.stringify(user));
-      await AsyncStorage.setItem("token", token);
-
-      Alert.alert("Sucesso", `Bem-vindo, ${user.name}!`);
-      navigation.replace("Home");
-
+      Alert.alert("Sucesso", "Login realizado!");
+      navigation.navigate("Home", { user: response.data.user });
     } catch (error) {
-      console.log(error);
-      Alert.alert("Erro", "Email ou senha incorretos.");
+      Alert.alert("Erro", "Email ou senha inválidos");
     }
   };
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
+        <Image source={require("../assets/logo.jpg")} style={styles.logo} />
+        <Text style={styles.title}>EventFlow</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="E-mail"
+          placeholderTextColor="#aaa"
           value={email}
           onChangeText={setEmail}
         />
@@ -42,6 +33,7 @@ export default function LoginScreen({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Senha"
+          placeholderTextColor="#aaa"
           secureTextEntry
           value={password}
           onChangeText={setSenha}
@@ -60,10 +52,26 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 10, marginBottom: 10 },
-  button: { backgroundColor: "#007AFF", padding: 15, borderRadius: 8 },
-  buttonText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
-  link: { color: "#007AFF", textAlign: "center", marginTop: 15 },
+  container: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#fff" },
+  logo: { width: 120, height: 120, marginBottom: 20 },
+  title: { fontSize: 26, fontWeight: "bold", color: "#007AFF", marginBottom: 30 },
+  input: {
+    width: "80%",
+    height: 45,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+  },
+  button: {
+    width: "80%",
+    backgroundColor: "#007AFF",
+    padding: 12,
+    borderRadius: 25,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  link: { marginTop: 15, color: "#007AFF" },
 });

@@ -1,51 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
 
-export default function ProfileScreen({ navigation }) {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const storedUser = await AsyncStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    };
-    loadUser();
-  }, []);
-
-  if (!user) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Nenhum usuário logado.</Text>
-      </View>
-    );
-  }
+export default function ProfileScreen({ route }) {
+  const user = route.params?.user;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Perfil</Text>
-      <Text style={styles.info}>Nome: {user.name}</Text>
-      <Text style={styles.info}>Email: {user.email}</Text>
-
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={async () => {
-          await AsyncStorage.clear();
-          navigation.replace("Login");
-        }}
-      >
-        <Text style={styles.logoutText}>Sair</Text>
-      </TouchableOpacity>
+      {/* <Image
+        source={require("../../assets/logo.png")}
+        style={styles.avatar}
+      /> */}
+      <Text style={styles.name}>{user?.nome || "Usuário"}</Text>
+      <Text style={styles.email}>{user?.email}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
-  info: { fontSize: 18, marginVertical: 5 },
-  logoutButton: { marginTop: 30, backgroundColor: "#ff3b30", padding: 12, borderRadius: 8 },
-  logoutText: { color: "#fff", fontWeight: "bold" },
+  container: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#fff" },
+  avatar: { width: 120, height: 120, borderRadius: 60, marginBottom: 20 },
+  name: { fontSize: 22, fontWeight: "bold", color: "#007AFF" },
+  email: { fontSize: 16, color: "#555" },
 });
