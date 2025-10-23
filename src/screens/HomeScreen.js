@@ -11,8 +11,7 @@ import {
 } from "react-native";
 import api from "../api/api";
 import { useNavigation } from "@react-navigation/native";
-import eventPlaceholder from "../assets/event-placeholder.jpg";
-import profileIcon from "../assets/profile-icon.jpg";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen({ route }) {
   const [events, setEventos] = useState([]);
@@ -49,65 +48,84 @@ export default function HomeScreen({ route }) {
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.8}
-      onPress={() => navigation.navigate("EventDetails", { event: item })}
+      onPress={() => Alert.alert("Evento", `Você selecionou: ${item.name}`)}
     >
       <Image
-        source={item.imagem ? { uri: item.imagem } : eventPlaceholder}
+        source={
+          item.image
+            ? { uri: item.image }
+            : require("../assets/event-placeholder.jpg")
+        }
         style={styles.image}
       />
       <View style={styles.info}>
-        <Text style={styles.name}>{item.nome}</Text>
-        <Text style={styles.date}>{item.data}</Text>
-        <Text style={styles.price}>R$ {item.preco}</Text>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.date}>{item.date}</Text>
+        <Text style={styles.price}>R$ {item.price}</Text>
       </View>
     </TouchableOpacity>
   );
-
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.welcome}>
-          Olá, {user?.name || "Usuário"} 👋
-        </Text>
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={() => navigation.navigate("Profile", { user })}
-        >
-          <Image
-            source={user?.foto ? { uri: user.foto } : profileIcon}
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={{ flex: 1 }}>
 
-      <FlatList
-        data={events}
-        keyExtractor={(item) => item._id}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Image
+            source={require("../assets/logo.jpg")}
+            style={styles.logo}
+          />
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => navigation.navigate("Profile", { user })}
+          >
+            <Text style={styles.profileText}>Ver Perfil</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Subtítulo */}
+        <Text style={styles.subtitle}>Bem-vindo ao Aplicativo</Text>
+
+        {/* Lista de eventos */}
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f5f5f5", paddingHorizontal: 15 },
+  container: { flex: 1, backgroundColor: "#f9f9f9", paddingHorizontal: 15 },
   loading: { flex: 1, justifyContent: "center", alignItems: "center" },
 
-  // Header
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 20,
+    paddingTop: 50,
+    paddingBottom: 10,
   },
-  welcome: { fontSize: 20, fontWeight: "600", color: "#333" },
-  profileButton: { borderRadius: 50, overflow: "hidden" },
-  profileImage: { width: 45, height: 45, borderRadius: 25 },
+  logo: { width: 80, height: 40, resizeMode: "contain" },
+  profileButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+  },
+  profileText: { color: "#fff", fontWeight: "bold", fontSize: 14 },
 
-  // Cards
+  subtitle: {
+    textAlign: "center",
+    fontSize: 26,
+    color: "#555",
+    marginBottom: 15,
+  },
+
   card: {
     backgroundColor: "#fff",
     borderRadius: 15,
