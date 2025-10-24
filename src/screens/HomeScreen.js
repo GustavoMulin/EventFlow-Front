@@ -9,20 +9,24 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
+import { Menu, Divider } from "react-native-paper";
+import { Ionicons } from "@expo/vector-icons";
 import api from "../api/api";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Header from "../components/Header";
 
 export default function HomeScreen({ route }) {
-  const [events, setEventos] = useState([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [menuVisible, setMenuVisible] = useState(false);
   const user = route.params?.user;
   const navigation = useNavigation();
 
   const carregarEventos = async () => {
     try {
       const response = await api.get("/events");
-      setEventos(response.data);
+      setEvents(response.data);
     } catch (error) {
       console.log(error);
       Alert.alert("Erro", "Não foi possível carregar os eventos.");
@@ -34,6 +38,9 @@ export default function HomeScreen({ route }) {
   useEffect(() => {
     carregarEventos();
   }, []);
+
+  const openMenu = () => setMenuVisible(true);
+  const closeMenu = () => setMenuVisible(false);
 
   if (loading) {
     return (
@@ -51,11 +58,11 @@ export default function HomeScreen({ route }) {
       onPress={() => Alert.alert("Evento", `Você selecionou: ${item.name}`)}
     >
       <Image
-        source={
-          item.image
-            ? { uri: item.image }
-            : require("../assets/event-placeholder.jpg")
-        }
+        source={{
+          uri:
+            item.image ||
+            Image.resolveAssetSource(require("../assets/event-placeholder.jpg")).uri,
+        }}
         style={styles.image}
       />
       <View style={styles.info}>
@@ -65,28 +72,27 @@ export default function HomeScreen({ route }) {
       </View>
     </TouchableOpacity>
   );
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
 
       <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Image
-            source={require("../assets/logo.jpg")}
-            style={styles.logo}
+        {/* HEADER */}
+        return (
+        <View style={styles.container}>
+          <Header navigation={navigation} />
+
+          <FlatList
+            data={events}
+            keyExtractor={(item) => item._id}
+            renderItem={renderItem}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
           />
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={() => navigation.navigate("Profile", { user })}
-          >
-            <Text style={styles.profileText}>Ver Perfil</Text>
-          </TouchableOpacity>
         </View>
+        );
 
-        {/* Subtítulo */}
-        <Text style={styles.subtitle}>Bem-vindo ao Aplicativo</Text>
 
-        {/* Lista de eventos */}
         <FlatList
           data={events}
           keyExtractor={(item) => item._id}
@@ -100,30 +106,25 @@ export default function HomeScreen({ route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9f9f9", paddingHorizontal: 15 },
+  container: { flex: 1, backgroundColor: "#f5f5f5", paddingHorizontal: 15 },
   loading: { flex: 1, justifyContent: "center", alignItems: "center" },
 
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 50,
-    paddingBottom: 10,
+    paddingVertical: 20,
   },
-  logo: { width: 80, height: 40, resizeMode: "contain" },
-  profileButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    borderRadius: 20,
+  logoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  profileText: { color: "#fff", fontWeight: "bold", fontSize: 14 },
+  logo: { width: 40, height: 40, borderRadius: 10, marginRight: 10 },
+  appTitle: { fontSize: 22, fontWeight: "bold", color: "#007AFF" },
 
-  subtitle: {
-    textAlign: "center",
-    fontSize: 26,
-    color: "#555",
-    marginBottom: 15,
+  menuButton: {
+    padding: 8,
+    borderRadius: 50,
   },
 
   card: {
