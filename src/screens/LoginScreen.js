@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, KeyboardAvoidingView, Platform } from "react-native";
 import api from "../api/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -9,6 +10,9 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     try {
       const response = await api.post("/auth/login", { email, password });
+
+      await AsyncStorage.setItem("token", response.data.token);
+
       Alert.alert("Sucesso", "Login realizado!");
       navigation.navigate("Home", { user: response.data.user });
     } catch (error) {

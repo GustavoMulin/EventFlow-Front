@@ -1,8 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Alert,
+    ScrollView,
+    Image,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import api from "../api/api";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CreateEventScreen({ navigation, route }) {
     const user = route.params?.user;
@@ -14,9 +24,7 @@ export default function CreateEventScreen({ navigation, route }) {
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 0.7,
+            mediaTypes: [ImagePicker.MediaType.IMAGE],
         });
 
         if (!result.canceled) {
@@ -26,30 +34,46 @@ export default function CreateEventScreen({ navigation, route }) {
 
     const handleCreateEvent = async () => {
         if (!name || !date) {
-            Alert.alert("Erro", "Preencha os campos obrigatórios.");
+            Alert.alert("Erro", "Preencha os campos obrigatórios (nome e data).");
             return;
         }
 
         try {
-            await api.post("/events", {
-                name,
-                description,
-                date,
-                price,
-                image: image || null,
-            });
+            // Buscar o token do AsyncStorage
+            const token = await AsyncStorage.getItem("token");
+            if (!token) {
+                Alert.alert("Erro", "Usuário não autenticado.");
+                return;
+            }
 
+            const response = await api.post(
+                "/events",
+                {
+                    name,
+                    description,
+                    date,
+                    price,
+                    image: image || null,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log("Evento criado:", response.data);
             Alert.alert("Sucesso", "Evento criado com sucesso!");
             navigation.navigate("Home", { user });
         } catch (error) {
-            console.log(error);
+            console.log("Erro ao criar evento:", error.response?.data || error.message);
             Alert.alert("Erro", "Não foi possível criar o evento.");
         }
     };
 
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
-
             <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.title}>Criar Novo Evento</Text>
 
@@ -106,7 +130,12 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
     },
-    title: { fontSize: 22, fontWeight: "bold", color: "#007AFF", marginBottom: 20 },
+    title: {
+        fontSize: 22,
+        fontWeight: "bold",
+        color: "#007AFF",
+        marginBottom: 20,
+    },
     image: {
         width: 200,
         height: 150,

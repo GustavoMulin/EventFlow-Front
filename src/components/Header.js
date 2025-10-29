@@ -1,26 +1,31 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet, Modal } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from "react-native";
 
 export default function Header({ navigation }) {
     const [menuVisible, setMenuVisible] = useState(false);
 
+    const toggleMenu = () => setMenuVisible(!menuVisible);
+
     return (
         <View style={styles.header}>
-            {/* Logo e nome do app */}
+            {/* Logo e nome */}
             <View style={styles.logoContainer}>
-                <Image
-                    source={require("../assets/logo.jpg")}
-                    style={styles.logo}
-                />
-                <Text style={styles.title}>EventFlow</Text>
+                <Image source={require("../assets/logo.jpg")} style={styles.logo} />
+                <Text style={styles.appName}>EventFlow</Text>
             </View>
 
-            <TouchableOpacity onPress={() => setMenuVisible(true)} style={styles.menuButton}>
-                <Text style={styles.menuIcon}>☰</Text>
+            {/* Botão de menu (⋯) */}
+            <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
+                <Text style={styles.menuText}>⋯</Text>
             </TouchableOpacity>
 
-            {/* Modal do menu */}
-            <Modal visible={menuVisible} transparent animationType="fade">
+            {/* Menu dropdown */}
+            <Modal
+                transparent
+                visible={menuVisible}
+                animationType="fade"
+                onRequestClose={() => setMenuVisible(false)}
+            >
                 <TouchableOpacity
                     style={styles.overlay}
                     onPress={() => setMenuVisible(false)}
@@ -28,23 +33,23 @@ export default function Header({ navigation }) {
                 >
                     <View style={styles.menu}>
                         <TouchableOpacity
-                            style={styles.menuItem}
                             onPress={() => {
                                 setMenuVisible(false);
                                 navigation.navigate("Profile");
                             }}
+                            style={styles.menuItem}
                         >
-                            <Text style={styles.menuText}>Ver Perfil</Text>
+                            <Text style={styles.menuItemText}>Ver Perfil</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={styles.menuItem}
                             onPress={() => {
                                 setMenuVisible(false);
                                 navigation.navigate("CreateEvent");
                             }}
+                            style={styles.menuItem}
                         >
-                            <Text style={styles.menuText}>Cadastrar Evento</Text>
+                            <Text style={styles.menuItemText}>Cadastrar Evento</Text>
                         </TouchableOpacity>
                     </View>
                 </TouchableOpacity>
@@ -58,26 +63,56 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingVertical: 15,
-        paddingHorizontal: 20,
-        elevation: 3,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        backgroundColor: "#fff",
+        elevation: 4,
     },
-    logoContainer: { flexDirection: "row", alignItems: "center" },
-    logo: { width: 40, height: 40, borderRadius: 8, marginRight: 10 },
-    title: { fontSize: 20, fontWeight: "bold", color: "#007AFF" },
-    menuButton: { padding: 8 },
-    menuIcon: { fontSize: 26, color: "#007AFF" },
+    logoContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    logo: {
+        width: 40,
+        height: 40,
+        resizeMode: "contain",
+        marginRight: 8,
+    },
+    appName: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: "#007AFF",
+    },
+    menuButton: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    menuText: {
+        fontSize: 28,
+        color: "#007AFF",
+    },
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.3)",
-        justifyContent: "flex-end",
+        backgroundColor: "rgba(0,0,0,0.1)",
     },
     menu: {
+        position: "absolute",
+        top: 70,
+        right: 15,
         backgroundColor: "#fff",
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15,
-        padding: 20,
+        borderRadius: 10,
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
     },
-    menuItem: { paddingVertical: 10 },
-    menuText: { fontSize: 18, color: "#007AFF" },
+    menuItem: {
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+    },
+    menuItemText: {
+        fontSize: 16,
+        color: "#007AFF",
+    },
 });
