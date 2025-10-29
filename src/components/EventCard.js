@@ -15,7 +15,7 @@ export default function EventCard({ event, onPress }) {
             <View style={styles.info}>
                 <Text style={styles.title}>{event.name}</Text>
                 <Text style={styles.date}>
-                    {event.date} • {event.time || "Horário não definido"}
+                    {"Data"} {event.date}
                 </Text>
                 <Text numberOfLines={2} style={styles.desc}>
                     {event.description}

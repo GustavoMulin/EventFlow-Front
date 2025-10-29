@@ -14,7 +14,7 @@ export default function LoginScreen({ navigation }) {
       await AsyncStorage.setItem("token", response.data.token);
 
       Alert.alert("Sucesso", "Login realizado!");
-      navigation.navigate("Home", { user: response.data.user });
+      navigation.replace("Home", { user: response.data.user });
     } catch (error) {
       Alert.alert("Erro", "Email ou senha inválidos");
     }
