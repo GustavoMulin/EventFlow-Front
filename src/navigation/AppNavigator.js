@@ -6,6 +6,8 @@ import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import CreateEventScreen from "../screens/CreateEventScreen";
+import EventDetailsScreen from "../screens/EventDetailsScreen";
+
 
 
 const Stack = createStackNavigator();
@@ -18,6 +20,11 @@ export default function AppNavigator() {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
+        <Stack.Screen
+          name="EventDetails"
+          component={EventDetailsScreen}
+          options={{ title: "Detalhes do Evento" }}
+        />
         <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
