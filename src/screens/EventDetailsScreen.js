@@ -31,7 +31,7 @@ export default function EventDetailsScreen({ route, navigation }) {
                     <Text style={styles.name}>{event.name}</Text>
 
                     {event.date && (
-                        <Text style={styles.date}>📅 {new Date(event.date).toLocaleDateString()}</Text>
+                        <Text style={styles.date}>📅 {event.date.toString()}</Text>
                     )}
 
                     {event.price ? (
