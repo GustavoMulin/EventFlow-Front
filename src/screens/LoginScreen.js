@@ -11,6 +11,8 @@ export default function LoginScreen({ navigation }) {
     try {
       const response = await api.post("/auth/login", { email, password });
 
+      await AsyncStorage.setItem("name", JSON.stringify(response.data.user));
+
       await AsyncStorage.setItem("token", response.data.token);
 
       Alert.alert("Sucesso", "Login realizado!");

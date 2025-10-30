@@ -1,15 +1,7 @@
 import React, { useState } from "react";
-import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    Alert,
-    ScrollView,
-    Image,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import MapView, { Marker } from "react-native-maps";
 import api from "../api/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,6 +13,7 @@ export default function CreateEventScreen({ navigation, route }) {
     const [date, setDate] = useState("");
     const [price, setPrice] = useState("");
     const [image, setImage] = useState(null);
+    const [location, setLocation] = useState(null); // <- novo estado
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -33,20 +26,15 @@ export default function CreateEventScreen({ navigation, route }) {
     };
 
     const handleCreateEvent = async () => {
-        if (!name || !date) {
-            Alert.alert("Erro", "Preencha os campos obrigatórios (nome e data).");
+        if (!name || !date || !location) {
+            Alert.alert("Erro", "Preencha todos os campos obrigatórios e escolha um local no mapa.");
             return;
         }
 
         try {
-            // Buscar o token do AsyncStorage
             const token = await AsyncStorage.getItem("token");
-            if (!token) {
-                Alert.alert("Erro", "Usuário não autenticado.");
-                return;
-            }
 
-            const response = await api.post(
+            await api.post(
                 "/events",
                 {
                     name,
@@ -54,23 +42,19 @@ export default function CreateEventScreen({ navigation, route }) {
                     date,
                     price,
                     image: image || null,
+                    latitude: location.latitude,
+                    longitude: location.longitude,
                 },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log("Evento criado:", response.data);
             Alert.alert("Sucesso", "Evento criado com sucesso!");
             navigation.navigate("Home", { user });
         } catch (error) {
-            console.log("Erro ao criar evento:", error.response?.data || error.message);
+            console.log(error);
             Alert.alert("Erro", "Não foi possível criar o evento.");
         }
     };
-
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -79,11 +63,7 @@ export default function CreateEventScreen({ navigation, route }) {
 
                 <TouchableOpacity onPress={pickImage}>
                     <Image
-                        source={
-                            image
-                                ? { uri: image }
-                                : require("../assets/event-placeholder.jpg")
-                        }
+                        source={image ? { uri: image } : require("../assets/event-placeholder.jpg")}
                         style={styles.image}
                     />
                     <Text style={styles.imageText}>Selecionar Imagem</Text>
@@ -115,6 +95,21 @@ export default function CreateEventScreen({ navigation, route }) {
                     onChangeText={setPrice}
                 />
 
+                {/* Mapa */}
+                <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Selecione o local no mapa:</Text>
+                <MapView
+                    style={styles.map}
+                    initialRegion={{
+                        latitude: -23.5505,
+                        longitude: -46.6333,
+                        latitudeDelta: 0.05,
+                        longitudeDelta: 0.05,
+                    }}
+                    onPress={(e) => setLocation(e.nativeEvent.coordinate)}
+                >
+                    {location && <Marker coordinate={location} />}
+                </MapView>
+
                 <TouchableOpacity style={styles.button} onPress={handleCreateEvent}>
                     <Text style={styles.buttonText}>Cadastrar Evento</Text>
                 </TouchableOpacity>
@@ -130,12 +125,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
     },
-    title: {
-        fontSize: 22,
-        fontWeight: "bold",
-        color: "#007AFF",
-        marginBottom: 20,
-    },
+    title: { fontSize: 22, fontWeight: "bold", color: "#007AFF", marginBottom: 20 },
     image: {
         width: 200,
         height: 150,
@@ -150,6 +140,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         marginBottom: 15,
+    },
+    map: {
+        width: "100%",
+        height: 200,
+        borderRadius: 10,
+        marginBottom: 20,
     },
     button: {
         width: "90%",
