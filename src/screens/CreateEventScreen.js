@@ -13,8 +13,7 @@ export default function CreateEventScreen({ navigation, route }) {
     const [date, setDate] = useState("");
     const [price, setPrice] = useState("");
     const [image, setImage] = useState(null);
-    const [location, setLocation] = useState(null); // <- novo estado
-
+    const [location, setLocation] = useState(null);
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: [ImagePicker.MediaType.IMAGE],
