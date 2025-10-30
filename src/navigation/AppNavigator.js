@@ -29,12 +29,6 @@ export default function AppNavigator() {
           options={{ title: "Mapa de Eventos" }}
         />
 
-        <Stack.Screen
-          name="EventMap"
-          component={EventMapScreen}
-          options={{ title: "Mapa de Eventos" }}
-        />
-
         <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
 
         <Stack.Screen
