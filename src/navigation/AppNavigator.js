@@ -29,7 +29,14 @@ export default function AppNavigator() {
           options={{ title: "Mapa de Eventos" }}
         />
 
-        <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
+        <Stack.Screen
+          name="CreateEvent"
+          component={CreateEventScreen}
+          options={{
+            title: "Cadastrar Evento",
+            headerShown: true,
+          }}
+        />
 
         <Stack.Screen
           name="EventDetails"
@@ -37,7 +44,14 @@ export default function AppNavigator() {
           options={{ title: "Detalhes do Evento" }}
         />
 
-        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            title: "Perfil",
+            headerShown: true,
+          }}
+        />
 
       </Stack.Navigator>
     </NavigationContainer>
