@@ -9,10 +9,26 @@ export default function ProfileScreen({ navigation }) {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const storedUser = await AsyncStorage.getItem("user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
+        const token = await AsyncStorage.getItem("token");
+
+        if (!token) {
+          navigation.replace("Login");
+          return;
         }
+
+        const response = await fetch("http://SEU_IP_LOCAL:3000/profile", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar perfil");
+        }
+
+        const data = await response.json();
+        setUser(data);
       } catch (error) {
         console.log("Erro ao carregar usuário:", error);
       }

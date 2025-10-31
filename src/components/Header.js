@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from "react-native";
 
-export default function Header({ navigation }) {
+export default function Header({ navigation, handleLogout }) {
     const [menuVisible, setMenuVisible] = useState(false);
 
     const toggleMenu = () => setMenuVisible(!menuVisible);
@@ -50,6 +50,26 @@ export default function Header({ navigation }) {
                             style={styles.menuItem}
                         >
                             <Text style={styles.menuItemText}>Cadastrar Evento</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                setMenuVisible(false);
+                                navigation.navigate("CreateLocation");
+                            }}
+                            style={styles.menuItem}
+                        >
+                            <Text style={styles.menuItemText}>Cadastrar Local</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                setMenuVisible(false);
+                                if (handleLogout) handleLogout();
+                            }}
+                            style={[styles.menuItem, styles.logoutItem]}
+                        >
+                            <Text style={[styles.menuItemText, styles.logoutText]}>Sair</Text>
                         </TouchableOpacity>
                     </View>
                 </TouchableOpacity>
@@ -114,5 +134,12 @@ const styles = StyleSheet.create({
     menuItemText: {
         fontSize: 16,
         color: "#007AFF",
+    },
+    logoutItem: {
+        borderTopWidth: 1,
+        borderTopColor: "#eee",
+    },
+    logoutText: {
+        color: "red",
     },
 });

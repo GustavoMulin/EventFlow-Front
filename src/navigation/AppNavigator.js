@@ -8,6 +8,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import CreateEventScreen from "../screens/CreateEventScreen";
 import EventDetailsScreen from "../screens/EventDetailsScreen";
 import EventMapScreen from "../screens/EventMapScreen";
+import CreateLocationScreen from "../screens/CreateLocationScreen";
 
 
 
@@ -23,10 +24,17 @@ export default function AppNavigator() {
 
         <Stack.Screen name="Home" component={HomeScreen} />
 
+
         <Stack.Screen
           name="EventMapScreen"
           component={EventMapScreen}
           options={{ title: "Mapa de Eventos" }}
+        />
+
+        <Stack.Screen
+          name="CreateLocation"
+          component={CreateLocationScreen}
+          options={{ headerShown: true }}
         />
 
         <Stack.Screen
