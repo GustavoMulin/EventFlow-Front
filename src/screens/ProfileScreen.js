@@ -12,22 +12,22 @@ export default function ProfileScreen({ navigation }) {
         const token = await AsyncStorage.getItem("token");
 
         if (!token) {
-          navigation.replace("Login");
+          console.log("Token não encontrado.");
           return;
         }
 
-        const response = await fetch("http://SEU_IP_LOCAL:3000/profile", {
-          method: "GET",
+        const response = await fetch("http://12.0.0.85:3000/api/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (!response.ok) {
-          throw new Error("Erro ao buscar perfil");
+          throw new Error("Falha ao carregar perfil");
         }
 
         const data = await response.json();
+        console.log("Perfil carregado:", data);
         setUser(data);
       } catch (error) {
         console.log("Erro ao carregar usuário:", error);
