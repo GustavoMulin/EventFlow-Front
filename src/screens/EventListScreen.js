@@ -54,6 +54,11 @@ export default function EventListScreen({ route }) {
                 {item.price !== undefined && (
                     <Text style={styles.price}>R$ {item.price.toFixed(2)}</Text>
                 )}
+
+                {/* 📍 Endereço do evento */}
+                {item.location?.address && (
+                    <Text style={styles.address}>📍 {item.location.address}</Text>
+                )}
             </View>
         </TouchableOpacity>
     );
@@ -138,4 +143,10 @@ const styles = StyleSheet.create({
     name: { fontSize: 18, fontWeight: "bold", color: "#333" },
     date: { fontSize: 14, color: "#777", marginTop: 4 },
     price: { fontSize: 16, fontWeight: "600", color: "#007AFF", marginTop: 6 },
+    address: {
+        fontSize: 14,
+        color: "#555",
+        marginTop: 4,
+    },
+
 });

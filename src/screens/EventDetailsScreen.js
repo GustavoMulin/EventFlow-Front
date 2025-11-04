@@ -40,6 +40,11 @@ export default function EventDetailsScreen({ route, navigation }) {
                         <Text style={styles.price}>Evento gratuito</Text>
                     )}
 
+                    {/* 📍 Endereço do evento */}
+                    {event.location?.address && (
+                        <Text style={styles.address}>📍 {event.location.address}</Text>
+                    )}
+
                     {event.description ? (
                         <Text style={styles.description}>{event.description}</Text>
                     ) : (
@@ -100,4 +105,10 @@ const styles = StyleSheet.create({
         color: "#444",
         lineHeight: 22,
     },
+    address: {
+        fontSize: 15,
+        color: "#444",
+        marginBottom: 10,
+    },
+
 });
