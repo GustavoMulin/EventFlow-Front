@@ -15,8 +15,18 @@ export default function CreateEventScreen({ navigation, route }) {
     const [image, setImage] = useState(null);
     const [location, setLocation] = useState(null);
     const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (status !== "granted") {
+            Alert.alert("Permissão negada", "Precisamos da permissão para acessar suas fotos!");
+            return;
+        }
+
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: [ImagePicker.MediaType.IMAGE],
+            mediaTypes: ImagePicker.MediaTypeOptions.Images, // <-- Correto!
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
         });
 
         if (!result.canceled) {
@@ -33,24 +43,36 @@ export default function CreateEventScreen({ navigation, route }) {
         try {
             const token = await AsyncStorage.getItem("token");
 
-            await api.post(
-                "/events",
-                {
-                    name,
-                    description,
-                    date,
-                    price,
-                    image: image || null,
-                    latitude: location.latitude,
-                    longitude: location.longitude,
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            formData.append("date", date);
+            formData.append("price", price);
+            formData.append("latitude", location.latitude);
+            formData.append("longitude", location.longitude);
+
+            if (image) {
+                const fileName = image.split("/").pop();
+                const fileType = fileName.split(".").pop();
+
+                formData.append("image", {
+                    uri: image,
+                    name: fileName,
+                    type: `image/${fileType}`,
+                });
+            }
+
+            await api.post("/events", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
                 },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            });
 
             Alert.alert("Sucesso", "Evento criado com sucesso!");
             navigation.navigate("Home", { user });
         } catch (error) {
-            console.log(error);
+            console.log("Erro ao criar evento:", error);
             Alert.alert("Erro", "Não foi possível criar o evento.");
         }
     };
