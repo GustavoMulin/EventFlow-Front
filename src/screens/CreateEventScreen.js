@@ -99,8 +99,8 @@ export default function CreateEventScreen({ navigation, route }) {
                 <MapView
                     style={styles.map}
                     initialRegion={{
-                        latitude: -23.5505,
-                        longitude: -46.6333,
+                        latitude: -8.76194,
+                        longitude: -63.90389,
                         latitudeDelta: 0.05,
                         longitudeDelta: 0.05,
                     }}

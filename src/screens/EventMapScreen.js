@@ -1,4 +1,3 @@
-// screens/EventMapScreen.js
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
@@ -34,8 +33,8 @@ export default function EventMapScreen({ navigation }) {
         <MapView
             style={styles.map}
             initialRegion={{
-                latitude: -23.5505,
-                longitude: -46.6333,
+                latitude: -8.76194,
+                longitude: -63.90389,
                 latitudeDelta: 0.05,
                 longitudeDelta: 0.05,
             }}

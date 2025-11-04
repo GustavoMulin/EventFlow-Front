@@ -34,7 +34,10 @@ export default function AppNavigator() {
         <Stack.Screen
           name="CreateLocation"
           component={CreateLocationScreen}
-          options={{ headerShown: true }}
+          options={{
+            title: "Cadastrar Localização",
+            headerShown: true
+          }}
         />
 
         <Stack.Screen
