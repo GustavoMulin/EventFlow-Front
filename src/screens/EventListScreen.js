@@ -55,7 +55,6 @@ export default function EventListScreen({ route }) {
                     <Text style={styles.price}>R$ {item.price.toFixed(2)}</Text>
                 )}
 
-                {/* 📍 Endereço do evento */}
                 {item.location?.address && (
                     <Text style={styles.address}>📍 {item.location.address}</Text>
                 )}
