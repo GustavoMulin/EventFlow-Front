@@ -9,6 +9,7 @@ import CreateEventScreen from "../screens/CreateEventScreen";
 import EventDetailsScreen from "../screens/EventDetailsScreen";
 import EventMapScreen from "../screens/EventMapScreen";
 import CreateLocationScreen from "../screens/CreateLocationScreen";
+import EditEventScreen from "../screens/EditEventScreen";
 
 
 
@@ -53,6 +54,15 @@ export default function AppNavigator() {
           name="EventDetails"
           component={EventDetailsScreen}
           options={{ title: "Detalhes do Evento" }}
+        />
+
+        <Stack.Screen
+          name="EditEvent"
+          component={EditEventScreen}
+          options={{
+            title: "Editar Evento",
+            headerShown: true
+          }}
         />
 
         <Stack.Screen

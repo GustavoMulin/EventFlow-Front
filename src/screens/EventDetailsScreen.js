@@ -11,8 +11,6 @@ export default function EventDetailsScreen({ route, navigation }) {
     const { event } = route.params;
 
     const handleDelete = async () => {
-        console.log("🗑️ Botão de exclusão pressionado");
-
         Alert.alert(
             "Excluir evento",
             "Tem certeza que deseja excluir este evento?",
@@ -23,7 +21,6 @@ export default function EventDetailsScreen({ route, navigation }) {
                     style: "destructive",
                     onPress: async () => {
                         try {
-                            console.log("➡️ Tentando excluir evento...");
                             const token = await AsyncStorage.getItem("token");
 
                             if (!token) {
@@ -31,18 +28,13 @@ export default function EventDetailsScreen({ route, navigation }) {
                                 return;
                             }
 
-                            console.log(`🧩 Requisição DELETE para /events/${event._id}`);
                             const response = await api.delete(`/events/${event._id}`, {
                                 headers: { Authorization: `Bearer ${token}` },
                             });
-
-                            console.log("✅ Evento excluído:", response.data);
                             Alert.alert("Sucesso", "Evento excluído com sucesso!");
                             navigation.goBack();
                         } catch (error) {
-                            console.error("❌ Erro ao excluir:", error);
                             if (error.response) {
-                                console.log("🔴 Erro do backend:", error.response.data);
                                 Alert.alert("Erro", error.response.data?.message || "Erro no servidor");
                             } else {
                                 Alert.alert("Erro", "Falha de rede ou servidor inacessível.");
