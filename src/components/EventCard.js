@@ -9,6 +9,7 @@ export default function EventCard({ event, onPress }) {
         ? { uri: `${BASE_URL}${event.image}` }
         : require("../assets/event-placeholder.jpg");
 
+
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
             <Image source={imageSource} style={styles.image} />

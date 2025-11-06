@@ -74,7 +74,6 @@ export default function EventDetailsScreen({ route, navigation }) {
                         {event.description || "Sem descrição disponível."}
                     </Text>
 
-                    {/* 🔘 BOTÕES */}
                     <View style={styles.actions}>
                         <TouchableOpacity
                             style={[styles.button, { backgroundColor: "#007AFF" }]}
