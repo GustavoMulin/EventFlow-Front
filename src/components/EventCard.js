@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
-const BASE_URL = "http://12.0.0.85:3000";
+const BASE_URL = "http://192.168.1.197:3000";
 
 export default function EventCard({ event, onPress }) {
     const imageSource = event.image

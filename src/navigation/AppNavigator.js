@@ -8,8 +8,10 @@ import ProfileScreen from "../screens/ProfileScreen";
 import CreateEventScreen from "../screens/CreateEventScreen";
 import EventDetailsScreen from "../screens/EventDetailsScreen";
 import EventMapScreen from "../screens/EventMapScreen";
-import CreateLocationScreen from "../screens/CreateLocationScreen";
 import EditEventScreen from "../screens/EditEventScreen";
+import CreateLocationScreen from "../screens/CreateLocationScreen";
+import EditLocationScreen from "../screens/EditLocationScreen";
+import LocationListScreen from "../screens/LocationListScreen";
 
 
 
@@ -62,6 +64,17 @@ export default function AppNavigator() {
           options={{
             title: "Editar Evento",
             headerShown: true
+          }}
+        />
+
+        <Stack.Screen name="LocationList" component={LocationListScreen} />
+
+        <Stack.Screen
+          name="EditLocation"
+          component={EditLocationScreen}
+          options={{
+            title: "Editar Local",
+            headerShown: true,
           }}
         />
 

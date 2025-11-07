@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../api/api";
 
-const BASE_URL = "http://12.0.0.85:3000";
+const BASE_URL = "http://192.168.1.197:3000";
 
 export default function EventDetailsScreen({ route, navigation }) {
     const { event } = route.params;
