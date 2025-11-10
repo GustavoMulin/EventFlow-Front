@@ -38,7 +38,7 @@ export default function AppNavigator() {
           name="CreateLocation"
           component={CreateLocationScreen}
           options={{
-            title: "Cadastrar Localização",
+            title: "Cadastrar Local",
             headerShown: true
           }}
         />
@@ -67,7 +67,14 @@ export default function AppNavigator() {
           }}
         />
 
-        <Stack.Screen name="LocationList" component={LocationListScreen} />
+        <Stack.Screen
+          name="LocationList"
+          component={LocationListScreen}
+          options={{
+            title: "Locais Cadastrados",
+            headerShown: true,
+          }}
+        />
 
         <Stack.Screen
           name="EditLocation"

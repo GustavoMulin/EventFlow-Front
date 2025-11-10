@@ -82,7 +82,7 @@ export default function EditEventScreen({ route, navigation }) {
                 <Image
                     source={
                         image
-                            ? { uri: image.includes("/uploads/") ? `http://192.168.1.197:3000${image}` : image }
+                            ? { uri: image.includes("/uploads/") ? `http://192.168.0.11:3000${image}` : image }
                             : require("../assets/event-placeholder.jpg")
                     }
                     style={styles.image}

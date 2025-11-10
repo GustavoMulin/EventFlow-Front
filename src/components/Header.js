@@ -65,6 +65,16 @@ export default function Header({ navigation, handleLogout }) {
                         <TouchableOpacity
                             onPress={() => {
                                 setMenuVisible(false);
+                                navigation.navigate("LocationList");
+                            }}
+                            style={styles.menuItem}
+                        >
+                            <Text style={styles.menuItemText}>Ver Locais Cadastrados</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                setMenuVisible(false);
                                 if (handleLogout) handleLogout();
                             }}
                             style={[styles.menuItem, styles.logoutItem]}
