@@ -12,7 +12,9 @@ import EditEventScreen from "../screens/EditEventScreen";
 import CreateLocationScreen from "../screens/CreateLocationScreen";
 import EditLocationScreen from "../screens/EditLocationScreen";
 import LocationListScreen from "../screens/LocationListScreen";
-
+import CreateCategoryScreen from "../screens/CreateCategoryScreen";
+import EditCategoryScreen from "../screens/EditCategoryScreen";
+import CategoryListScreen from "../screens/CategoryListScreen";
 
 
 const Stack = createStackNavigator();
@@ -53,6 +55,12 @@ export default function AppNavigator() {
         />
 
         <Stack.Screen
+          name="CreateCategory"
+          component={CreateCategoryScreen}
+          options={{ title: "Nova Categoria", headerShown: true }}
+        />
+
+        <Stack.Screen
           name="EventDetails"
           component={EventDetailsScreen}
           options={{ title: "Detalhes do Evento" }}
@@ -77,12 +85,24 @@ export default function AppNavigator() {
         />
 
         <Stack.Screen
+          name="CategoryList"
+          component={CategoryListScreen}
+          options={{ title: "Categorias", headerShown: true }}
+        />
+
+        <Stack.Screen
           name="EditLocation"
           component={EditLocationScreen}
           options={{
             title: "Editar Local",
             headerShown: true,
           }}
+        />
+
+        <Stack.Screen
+          name="EditCategory"
+          component={EditCategoryScreen}
+          options={{ title: "Editar Categoria", headerShown: true }}
         />
 
         <Stack.Screen

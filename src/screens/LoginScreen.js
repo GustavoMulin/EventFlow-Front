@@ -25,8 +25,8 @@ export default function LoginScreen({ navigation }) {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Image source={require("../assets/logo.jpg")} style={styles.logo} />
-        <Text style={styles.title}>EventFlow</Text>
+        <Image source={require("../assets/logo.png")} style={styles.logo} />
+        <Text style={styles.title}>The Best Eventos</Text>
 
         <TextInput
           style={styles.input}

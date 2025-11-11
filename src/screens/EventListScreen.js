@@ -76,8 +76,8 @@ export default function EventListScreen({ route }) {
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
-                    <Image source={require("../assets/logo.jpg")} style={styles.logo} />
-                    <Text style={styles.logoText}>EventFlow</Text>
+                    <Image source={require("../assets/logo.png")} style={styles.logo} />
+                    <Text style={styles.logoText}>The Best Eventos</Text>
                 </View>
 
                 <TouchableOpacity

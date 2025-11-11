@@ -10,8 +10,8 @@ export default function Header({ navigation, handleLogout }) {
         <View style={styles.header}>
             {/* Logo e nome */}
             <View style={styles.logoContainer}>
-                <Image source={require("../assets/logo.jpg")} style={styles.logo} />
-                <Text style={styles.appName}>EventFlow</Text>
+                <Image source={require("../assets/logo.png")} style={styles.logo} />
+                <Text style={styles.appName}>The Best Eventos</Text>
             </View>
 
             {/* Botão de menu (⋯) */}
@@ -75,12 +75,24 @@ export default function Header({ navigation, handleLogout }) {
                         <TouchableOpacity
                             onPress={() => {
                                 setMenuVisible(false);
-                                if (handleLogout) handleLogout();
+                                navigation.navigate("CreateCategory");
                             }}
-                            style={[styles.menuItem, styles.logoutItem]}
+                            style={styles.menuItem}
                         >
-                            <Text style={[styles.menuItemText, styles.logoutText]}>Sair</Text>
+                            <Text style={styles.menuItemText}>Cadastrar Categoria</Text>
+
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                setMenuVisible(false);
+                                navigation.navigate("CategoryList");
+                            }}
+                            style={styles.menuItem}
+                        >
+                            <Text style={styles.menuItemText}>Ver Categorias</Text>
+                        </TouchableOpacity>
+
                     </View>
                 </TouchableOpacity>
             </Modal>
