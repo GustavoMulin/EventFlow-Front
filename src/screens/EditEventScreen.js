@@ -48,7 +48,6 @@ export default function EditEventScreen({ route, navigation }) {
             formData.append("date", date);
             formData.append("price", price);
 
-            // Se o usuário selecionou uma nova imagem
             if (image && !image.includes("/uploads/")) {
                 const fileName = image.split("/").pop();
                 const fileType = fileName.split(".").pop();
@@ -82,7 +81,7 @@ export default function EditEventScreen({ route, navigation }) {
                 <Image
                     source={
                         image
-                            ? { uri: image.includes("/uploads/") ? `http://192.168.0.11:3000${image}` : image }
+                            ? { uri: image.includes("/uploads/") ? `http://12.0.0.100:3000${image}` : image }
                             : require("../assets/event-placeholder.jpg")
                     }
                     style={styles.image}

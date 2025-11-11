@@ -73,7 +73,6 @@ export default function EventListScreen({ route }) {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
                     <Image source={require("../assets/logo.png")} style={styles.logo} />
@@ -109,7 +108,6 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 15 },
     loading: { flex: 1, justifyContent: "center", alignItems: "center" },
 
-    // Header
     header: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -129,7 +127,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
 
-    // Cards
     card: {
         backgroundColor: "#f9f9f9",
         borderRadius: 15,
