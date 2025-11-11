@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "reac
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const API_URL = "http://12.0.0.100:3000/api/categories";
+const API_URL = "http://192.168.0.11:3000/api/categories";
 
 export default function EditCategoryScreen({ route, navigation }) {
     const { categoryId, categoryName } = route.params;

@@ -8,18 +8,15 @@ export default function Header({ navigation, handleLogout }) {
 
     return (
         <View style={styles.header}>
-            {/* Logo e nome */}
             <View style={styles.logoContainer}>
                 <Image source={require("../assets/logo.png")} style={styles.logo} />
                 <Text style={styles.appName}>The Best Eventos</Text>
             </View>
 
-            {/* Botão de menu (⋯) */}
             <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
                 <Text style={styles.menuText}>⋯</Text>
             </TouchableOpacity>
 
-            {/* Menu dropdown */}
             <Modal
                 transparent
                 visible={menuVisible}
