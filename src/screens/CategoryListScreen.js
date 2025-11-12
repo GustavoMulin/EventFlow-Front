@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet } from "react
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const API_URL = "http://12.0.0.96:3000/api/categories";
+const API_URL = "http://192.168.0.11:3000/api/categories";
 
 export default function CategoryListScreen({ navigation }) {
     const [categories, setCategories] = useState([]);
