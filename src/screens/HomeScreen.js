@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, ScrollView, ActivityIndicator, StyleSheet, Alert } from "react-native";
+import { View, ScrollView, ActivityIndicator, StyleSheet, Alert, Text } from "react-native";
 import Header from "../components/Header";
 import EventCard from "../components/EventCard";
 import api from "../api/api";
@@ -34,6 +34,7 @@ export default function HomeScreen({ navigation }) {
           <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 40 }} />
         ) : (
           <ScrollView contentContainerStyle={styles.container}>
+            <Text>Eventos Disponíveis</Text>
             {events.map((event) => (
               <EventCard
                 key={event._id}
