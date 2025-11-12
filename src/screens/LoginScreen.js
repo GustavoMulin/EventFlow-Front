@@ -34,7 +34,11 @@ export default function LoginScreen({ navigation }) {
           placeholderTextColor="#aaa"
           value={email}
           onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          autoCorrect={false}
         />
+
 
         <TextInput
           style={styles.input}
@@ -43,7 +47,10 @@ export default function LoginScreen({ navigation }) {
           secureTextEntry
           value={password}
           onChangeText={setSenha}
+          autoCapitalize="none"
+          autoCorrect={false}
         />
+
 
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Entrar</Text>
