@@ -23,7 +23,7 @@ export default function CreateCategoryScreen({ navigation }) {
             );
 
             Alert.alert("Sucesso", "Categoria criada!");
-            navigation.navigate("CategoryList");
+            navigation.replace("CategoryList");
         } catch (error) {
             console.error("Erro ao criar categoria:", error.response?.data || error.message);
             Alert.alert("Erro", "Não foi possível criar a categoria.");
