@@ -31,10 +31,11 @@ export default function AppNavigator() {
 
 
         <Stack.Screen
-          name="EventMapScreen"
+          name="EventMap"
           component={EventMapScreen}
-          options={{ title: "Mapa de Eventos" }}
+          options={{ title: "Mapa de Eventos", headerShown: true }}
         />
+
 
         <Stack.Screen
           name="CreateLocation"

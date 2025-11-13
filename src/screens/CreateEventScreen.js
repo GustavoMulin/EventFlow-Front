@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MapView, { Marker } from "react-native-maps";
 import api from "../api/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Picker } from "@react-native-picker/picker";
+import ModalSelector from "react-native-modal-selector";
+
 
 export default function CreateEventScreen({ navigation, route }) {
     const user = route.params?.user;
@@ -14,6 +17,10 @@ export default function CreateEventScreen({ navigation, route }) {
     const [price, setPrice] = useState("");
     const [image, setImage] = useState(null);
     const [location, setLocation] = useState(null);
+    const [optionsLocation, setOptionsLocation] = useState([]);
+    const [locationSelected, setLocationSelected] = useState(null);
+    const mapRef = useRef(null);
+
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -31,6 +38,46 @@ export default function CreateEventScreen({ navigation, route }) {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
+        }
+    };
+
+    async function getLocation() {
+        const token = await AsyncStorage.getItem("token");
+
+        try {
+            const response = await api.get("/locations", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setOptionsLocation(response.data);
+        } catch (error) {
+            console.log("Erro ao buscar locais:", error);
+            Alert.alert("Erro", "Não foi possível carregar os locais.");
+        }
+    }
+
+    useEffect(() => {
+        getLocation();
+    }, []);
+
+    const handleSelectLocation = (id) => {
+        setLocationSelected(id);
+
+        const selected = optionsLocation.find((loc) => loc._id === id);
+        if (selected) {
+            const coords = {
+                latitude: selected.latitude,
+                longitude: selected.longitude,
+            };
+
+            setLocation(coords);
+
+            mapRef.current?.animateToRegion({
+                ...coords,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+            });
         }
     };
 
@@ -54,7 +101,6 @@ export default function CreateEventScreen({ navigation, route }) {
             if (image) {
                 const fileName = image.split("/").pop();
                 const fileType = fileName.split(".").pop();
-
                 formData.append("image", {
                     uri: image,
                     name: fileName,
@@ -70,16 +116,16 @@ export default function CreateEventScreen({ navigation, route }) {
             });
 
             Alert.alert("Sucesso", "Evento criado com sucesso!");
-            navigation.navigate("Home", { user });
+            navigation.replace("Home");
         } catch (error) {
-            console.log("Erro ao criar evento:", error);
+            console.log("Erro ao criar evento:", error.response?.data || error.message);
             Alert.alert("Erro", "Não foi possível criar o evento.");
         }
     };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={styles.container}>
+            <ScrollView contentContainerStyle={styles.container} nestedScrollEnabled>
                 <Text style={styles.title}>Criar Novo Evento</Text>
 
                 <TouchableOpacity onPress={pickImage}>
@@ -116,9 +162,32 @@ export default function CreateEventScreen({ navigation, route }) {
                     onChangeText={setPrice}
                 />
 
-                {/* Mapa */}
+
+                <ModalSelector
+                    data={optionsLocation.map((loc) => ({ key: loc._id, label: loc.name }))}
+                    initValue="Selecione um local..."
+                    onChange={(option) => handleSelectLocation(option.key)}
+                    style={styles.selectorContainer}
+                    selectStyle={styles.selector}
+                    selectTextStyle={styles.selectorText}
+                    optionTextStyle={styles.optionText}
+                    cancelText="Cancelar"
+                    backdropPressToClose={true}
+                    animationType="fade"
+                >
+                    <View style={styles.selector}>
+                        <Text style={styles.selectorText}>
+                            {optionsLocation.find((loc) => loc._id === locationSelected)?.name || "Selecione um local..."}
+                        </Text>
+                        <Text style={styles.arrowIcon}>▼</Text>
+                    </View>
+                </ModalSelector>
+
+
+
                 <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Selecione o local no mapa:</Text>
                 <MapView
+                    ref={mapRef}
                     style={styles.map}
                     initialRegion={{
                         latitude: -8.76194,
@@ -176,4 +245,31 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+    selectorContainer: {
+        width: "90%",
+        marginBottom: 15,
+    },
+    selector: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        padding: 10,
+        backgroundColor: "#fff",
+    },
+    selectorText: {
+        fontSize: 16,
+        color: "#333",
+    },
+    arrowIcon: {
+        fontSize: 16,
+        color: "#888",
+    },
+    optionText: {
+        fontSize: 16,
+        color: "#333",
+    },
+
 });

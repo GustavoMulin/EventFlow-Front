@@ -23,18 +23,18 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Erro", "Digite um e-mail válido (exemplo@email.com)");
-      return;
-    }
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(email)) {
+    //   Alert.alert("Erro", "Digite um e-mail válido (exemplo@email.com)");
+    //   return;
+    // }
 
-    if (password.length < 8) {
-      setPasswordError("A senha deve ter no mínimo 8 caracteres.");
-      return;
-    } else {
-      setPasswordError("");
-    }
+    // if (password.length < 8) {
+    //   setPasswordError("A senha deve ter no mínimo 8 caracteres.");
+    //   return;
+    // } else {
+    //   setPasswordError("");
+    // }
 
     try {
       if (!name || !email || !password) {

@@ -7,6 +7,7 @@ import {
   Alert,
   Text,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import Header from "../components/Header";
 import EventCard from "../components/EventCard";
@@ -67,7 +68,12 @@ export default function HomeScreen({ navigation }) {
               onChangeText={handleSearch}
             />
 
-            <Text style={styles.title}>Eventos Disponíveis</Text>
+            <TouchableOpacity
+              style={styles.mapButton}
+              onPress={() => navigation.navigate("EventMap")}
+            >
+              <Text style={styles.mapButtonText}>🗺️ Ver Mapa de Eventos</Text>
+            </TouchableOpacity>
 
             {filteredEvents.length > 0 ? (
               filteredEvents.map((event) => (
@@ -97,9 +103,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     color: "#007AFF",
-    flex: 1,
     textAlign: "center",
-    justifyContent: "center",
   },
   searchBar: {
     backgroundColor: "#fff",
@@ -114,5 +118,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#888",
     marginTop: 20,
+  },
+  mapButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  mapButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

@@ -16,7 +16,7 @@ export default function ProfileScreen({ navigation }) {
           return;
         }
 
-        const response = await fetch("http://192.168.0.11:3000/api/profile", {
+        const response = await fetch("http://12.0.0.96:3000/api/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
