@@ -1,16 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Alert,
+    ScrollView,
+    Image,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MapView, { Marker } from "react-native-maps";
 import api from "../api/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Picker } from "@react-native-picker/picker";
-import ModalSelector from "react-native-modal-selector";
-
 
 export default function CreateEventScreen({ navigation, route }) {
     const user = route.params?.user;
+
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [date, setDate] = useState("");
@@ -19,6 +26,12 @@ export default function CreateEventScreen({ navigation, route }) {
     const [location, setLocation] = useState(null);
     const [optionsLocation, setOptionsLocation] = useState([]);
     const [locationSelected, setLocationSelected] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [categorySelected, setCategorySelected] = useState(null);
+
+    const [dropdownCategoryOpen, setDropdownCategoryOpen] = useState(false);
+    const [dropdownLocationOpen, setDropdownLocationOpen] = useState(false);
+
     const mapRef = useRef(null);
 
     const pickImage = async () => {
@@ -46,9 +59,7 @@ export default function CreateEventScreen({ navigation, route }) {
 
         try {
             const response = await api.get("/locations", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
             setOptionsLocation(response.data);
         } catch (error) {
@@ -57,8 +68,22 @@ export default function CreateEventScreen({ navigation, route }) {
         }
     }
 
+    async function getCategories() {
+        const token = await AsyncStorage.getItem("token");
+        try {
+            const response = await api.get("/categories", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setCategories(response.data);
+        } catch (error) {
+            console.log("Erro ao buscar categorias:", error);
+            Alert.alert("Erro", "Não foi possível carregar as categorias.");
+        }
+    }
+
     useEffect(() => {
         getLocation();
+        getCategories();
     }, []);
 
     const handleSelectLocation = (id) => {
@@ -82,8 +107,8 @@ export default function CreateEventScreen({ navigation, route }) {
     };
 
     const handleCreateEvent = async () => {
-        if (!name || !date || !location) {
-            Alert.alert("Erro", "Preencha todos os campos obrigatórios e escolha um local no mapa.");
+        if (!name || !date || !location || !categorySelected) {
+            Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
             return;
         }
 
@@ -97,6 +122,8 @@ export default function CreateEventScreen({ navigation, route }) {
             formData.append("price", price);
             formData.append("latitude", location.latitude);
             formData.append("longitude", location.longitude);
+            formData.append("category", categorySelected);
+            formData.append("locationId", locationSelected);
 
             if (image) {
                 const fileName = image.split("/").pop();
@@ -136,24 +163,9 @@ export default function CreateEventScreen({ navigation, route }) {
                     <Text style={styles.imageText}>Selecionar Imagem</Text>
                 </TouchableOpacity>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nome do evento"
-                    value={name}
-                    onChangeText={setName}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Descrição"
-                    value={description}
-                    onChangeText={setDescription}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Data (ex: 2025-10-23)"
-                    value={date}
-                    onChangeText={setDate}
-                />
+                <TextInput style={styles.input} placeholder="Nome do evento" value={name} onChangeText={setName} />
+                <TextInput style={styles.input} placeholder="Descrição" value={description} onChangeText={setDescription} />
+                <TextInput style={styles.input} placeholder="Data (ex: 2025-10-23)" value={date} onChangeText={setDate} />
                 <TextInput
                     style={styles.input}
                     placeholder="Preço (ex: 30)"
@@ -162,28 +174,63 @@ export default function CreateEventScreen({ navigation, route }) {
                     onChangeText={setPrice}
                 />
 
-
-                <ModalSelector
-                    data={optionsLocation.map((loc) => ({ key: loc._id, label: loc.name }))}
-                    initValue="Selecione um local..."
-                    onChange={(option) => handleSelectLocation(option.key)}
-                    style={styles.selectorContainer}
-                    selectStyle={styles.selector}
-                    selectTextStyle={styles.selectorText}
-                    optionTextStyle={styles.optionText}
-                    cancelText="Cancelar"
-                    backdropPressToClose={true}
-                    animationType="fade"
+                <TouchableOpacity
+                    onPress={() => setDropdownCategoryOpen(!dropdownCategoryOpen)}
+                    style={styles.selector}
                 >
-                    <View style={styles.selector}>
-                        <Text style={styles.selectorText}>
-                            {optionsLocation.find((loc) => loc._id === locationSelected)?.name || "Selecione um local..."}
-                        </Text>
-                        <Text style={styles.arrowIcon}>▼</Text>
-                    </View>
-                </ModalSelector>
+                    <Text style={styles.selectorText}>
+                        {categorySelected
+                            ? categories.find((c) => c._id === categorySelected)?.name
+                            : "Selecione uma categoria..."}
+                    </Text>
+                    <Text style={styles.arrowIcon}>▼</Text>
+                </TouchableOpacity>
 
+                {dropdownCategoryOpen && (
+                    <ScrollView style={styles.dropdownList}>
+                        {categories.map((cat) => (
+                            <TouchableOpacity
+                                key={cat._id}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                    setCategorySelected(cat._id);
+                                    setDropdownCategoryOpen(false);
+                                }}
+                            >
+                                <Text style={styles.dropdownItemText}>{cat.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                )}
 
+                <TouchableOpacity
+                    onPress={() => setDropdownLocationOpen(!dropdownLocationOpen)}
+                    style={styles.selector}
+                >
+                    <Text style={styles.selectorText}>
+                        {locationSelected
+                            ? optionsLocation.find((loc) => loc._id === locationSelected)?.name
+                            : "Selecione um local..."}
+                    </Text>
+                    <Text style={styles.arrowIcon}>▼</Text>
+                </TouchableOpacity>
+
+                {dropdownLocationOpen && (
+                    <ScrollView style={styles.dropdownList}>
+                        {optionsLocation.map((loc) => (
+                            <TouchableOpacity
+                                key={loc._id}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                    handleSelectLocation(loc._id);
+                                    setDropdownLocationOpen(false);
+                                }}
+                            >
+                                <Text style={styles.dropdownItemText}>{loc.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                )}
 
                 <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Selecione o local no mapa:</Text>
                 <MapView
@@ -216,12 +263,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: { fontSize: 22, fontWeight: "bold", color: "#007AFF", marginBottom: 20 },
-    image: {
-        width: 200,
-        height: 150,
-        borderRadius: 10,
-        marginBottom: 10,
-    },
+    image: { width: 200, height: 150, borderRadius: 10, marginBottom: 10 },
     imageText: { color: "#007AFF", marginBottom: 15 },
     input: {
         width: "90%",
@@ -245,10 +287,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-    selectorContainer: {
-        width: "90%",
-        marginBottom: 15,
-    },
+
     selector: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -258,18 +297,24 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         backgroundColor: "#fff",
+        width: "90%",
+        marginBottom: 10,
     },
-    selectorText: {
-        fontSize: 16,
-        color: "#333",
+    selectorText: { fontSize: 16, color: "#333" },
+    arrowIcon: { fontSize: 16, color: "#888" },
+    dropdownList: {
+        maxHeight: 150,
+        width: "90%",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        backgroundColor: "#fff",
+        marginBottom: 15,
     },
-    arrowIcon: {
-        fontSize: 16,
-        color: "#888",
+    dropdownItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: "#eee",
     },
-    optionText: {
-        fontSize: 16,
-        color: "#333",
-    },
-
+    dropdownItemText: { fontSize: 16, color: "#333" },
 });
