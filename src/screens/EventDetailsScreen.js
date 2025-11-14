@@ -14,7 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import MapView, { Marker } from "react-native-maps";
 import api from "../api/api";
 
-const BASE_URL = "http://12.0.0.143:3000";
+const BASE_URL = "http://192.168.0.22:3000";
 
 export default function EventDetailsScreen({ route, navigation }) {
     const { event } = route.params;
