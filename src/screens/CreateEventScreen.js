@@ -187,7 +187,11 @@ export default function CreateEventScreen({ navigation, route }) {
                 </TouchableOpacity>
 
                 {dropdownCategoryOpen && (
-                    <ScrollView style={styles.dropdownList}>
+                    <ScrollView
+                        style={styles.dropdownList}
+                        nestedScrollEnabled={true}
+                        keyboardShouldPersistTaps="handled"
+                    >
                         {categories.map((cat) => (
                             <TouchableOpacity
                                 key={cat._id}
@@ -203,6 +207,7 @@ export default function CreateEventScreen({ navigation, route }) {
                     </ScrollView>
                 )}
 
+
                 <TouchableOpacity
                     onPress={() => setDropdownLocationOpen(!dropdownLocationOpen)}
                     style={styles.selector}
@@ -216,7 +221,11 @@ export default function CreateEventScreen({ navigation, route }) {
                 </TouchableOpacity>
 
                 {dropdownLocationOpen && (
-                    <ScrollView style={styles.dropdownList}>
+                    <ScrollView
+                        style={styles.dropdownList}
+                        nestedScrollEnabled={true}
+                        keyboardShouldPersistTaps="handled"
+                    >
                         {optionsLocation.map((loc) => (
                             <TouchableOpacity
                                 key={loc._id}
@@ -232,7 +241,6 @@ export default function CreateEventScreen({ navigation, route }) {
                     </ScrollView>
                 )}
 
-                <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Selecione o local no mapa:</Text>
                 <MapView
                     ref={mapRef}
                     style={styles.map}
