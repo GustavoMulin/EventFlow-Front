@@ -8,6 +8,7 @@ import {
     Alert,
     ScrollView,
     Image,
+    Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MapView, { Marker } from "react-native-maps";
@@ -23,11 +24,14 @@ export default function CreateEventScreen({ navigation, route }) {
     const [date, setDate] = useState("");
     const [price, setPrice] = useState("");
     const [image, setImage] = useState(null);
+
     const [location, setLocation] = useState(null);
     const [optionsLocation, setOptionsLocation] = useState([]);
     const [locationSelected, setLocationSelected] = useState(null);
+
     const [categories, setCategories] = useState([]);
     const [categorySelected, setCategorySelected] = useState(null);
+    const [newCategory, setNewCategory] = useState("");
 
     const [dropdownCategoryOpen, setDropdownCategoryOpen] = useState(false);
     const [dropdownLocationOpen, setDropdownLocationOpen] = useState(false);
@@ -68,26 +72,9 @@ export default function CreateEventScreen({ navigation, route }) {
         }
     }
 
-    async function getCategories() {
-        const token = await AsyncStorage.getItem("token");
-        try {
-            const response = await api.get("/categories", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setCategories(response.data);
-        } catch (error) {
-            console.log("Erro ao buscar categorias:", error);
-            Alert.alert("Erro", "Não foi possível carregar as categorias.");
-        }
-    }
-
-    useEffect(() => {
-        getLocation();
-        getCategories();
-    }, []);
-
     const handleSelectLocation = (id) => {
         setLocationSelected(id);
+        setLocation(null);
 
         const selected = optionsLocation.find((loc) => loc._id === id);
         if (selected) {
@@ -106,8 +93,26 @@ export default function CreateEventScreen({ navigation, route }) {
         }
     };
 
+    async function getCategories() {
+        const token = await AsyncStorage.getItem("token");
+        try {
+            const response = await api.get("/categories", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setCategories(response.data);
+        } catch (error) {
+            console.log("Erro ao buscar categorias:", error);
+            Alert.alert("Erro", "Não foi possível carregar as categorias.");
+        }
+    }
+
+    useEffect(() => {
+        getLocation();
+        getCategories();
+    }, []);
+
     const handleCreateEvent = async () => {
-        if (!name || !date || !location || !categorySelected) {
+        if (!name || !date || !location || (!categorySelected && !newCategory)) {
             Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
             return;
         }
@@ -122,8 +127,11 @@ export default function CreateEventScreen({ navigation, route }) {
             formData.append("price", price);
             formData.append("latitude", location.latitude);
             formData.append("longitude", location.longitude);
-            formData.append("category", categorySelected);
-            formData.append("locationId", locationSelected);
+            formData.append(
+                "category",
+                categorySelected ? categorySelected : newCategory
+            );
+            if (locationSelected) formData.append("locationId", locationSelected);
 
             if (image) {
                 const fileName = image.split("/").pop();
@@ -157,15 +165,34 @@ export default function CreateEventScreen({ navigation, route }) {
 
                 <TouchableOpacity onPress={pickImage}>
                     <Image
-                        source={image ? { uri: image } : require("../assets/event-placeholder.jpg")}
+                        source={
+                            image
+                                ? { uri: image }
+                                : require("../assets/event-placeholder.jpg")
+                        }
                         style={styles.image}
                     />
                     <Text style={styles.imageText}>Selecionar Imagem</Text>
                 </TouchableOpacity>
 
-                <TextInput style={styles.input} placeholder="Nome do evento" value={name} onChangeText={setName} />
-                <TextInput style={styles.input} placeholder="Descrição" value={description} onChangeText={setDescription} />
-                <TextInput style={styles.input} placeholder="Data (ex: 2025-10-23)" value={date} onChangeText={setDate} />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Nome do evento"
+                    value={name}
+                    onChangeText={setName}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Descrição"
+                    value={description}
+                    onChangeText={setDescription}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Data (ex: 2025-10-23)"
+                    value={date}
+                    onChangeText={setDate}
+                />
                 <TextInput
                     style={styles.input}
                     placeholder="Preço (ex: 30)"
@@ -181,7 +208,9 @@ export default function CreateEventScreen({ navigation, route }) {
                     <Text style={styles.selectorText}>
                         {categorySelected
                             ? categories.find((c) => c._id === categorySelected)?.name
-                            : "Selecione uma categoria..."}
+                            : newCategory
+                                ? newCategory
+                                : "Selecione ou digite uma categoria..."}
                     </Text>
                     <Text style={styles.arrowIcon}>▼</Text>
                 </TouchableOpacity>
@@ -189,7 +218,7 @@ export default function CreateEventScreen({ navigation, route }) {
                 {dropdownCategoryOpen && (
                     <ScrollView
                         style={styles.dropdownList}
-                        nestedScrollEnabled={true}
+                        nestedScrollEnabled
                         keyboardShouldPersistTaps="handled"
                     >
                         {categories.map((cat) => (
@@ -198,15 +227,31 @@ export default function CreateEventScreen({ navigation, route }) {
                                 style={styles.dropdownItem}
                                 onPress={() => {
                                     setCategorySelected(cat._id);
+                                    setNewCategory("");
                                     setDropdownCategoryOpen(false);
                                 }}
                             >
                                 <Text style={styles.dropdownItemText}>{cat.name}</Text>
                             </TouchableOpacity>
                         ))}
+                        <View style={{ padding: 10 }}>
+                            <TextInput
+                                placeholder="Nova categoria..."
+                                value={newCategory}
+                                onChangeText={(text) => {
+                                    setNewCategory(text);
+                                    setCategorySelected(null);
+                                }}
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: "#ccc",
+                                    borderRadius: 8,
+                                    padding: 8,
+                                }}
+                            />
+                        </View>
                     </ScrollView>
                 )}
-
 
                 <TouchableOpacity
                     onPress={() => setDropdownLocationOpen(!dropdownLocationOpen)}
@@ -215,7 +260,9 @@ export default function CreateEventScreen({ navigation, route }) {
                     <Text style={styles.selectorText}>
                         {locationSelected
                             ? optionsLocation.find((loc) => loc._id === locationSelected)?.name
-                            : "Selecione um local..."}
+                            : location
+                                ? "Local definido no mapa"
+                                : "Selecione um local ou clique no mapa..."}
                     </Text>
                     <Text style={styles.arrowIcon}>▼</Text>
                 </TouchableOpacity>
@@ -223,7 +270,7 @@ export default function CreateEventScreen({ navigation, route }) {
                 {dropdownLocationOpen && (
                     <ScrollView
                         style={styles.dropdownList}
-                        nestedScrollEnabled={true}
+                        nestedScrollEnabled
                         keyboardShouldPersistTaps="handled"
                     >
                         {optionsLocation.map((loc) => (
@@ -250,7 +297,10 @@ export default function CreateEventScreen({ navigation, route }) {
                         latitudeDelta: 0.05,
                         longitudeDelta: 0.05,
                     }}
-                    onPress={(e) => setLocation(e.nativeEvent.coordinate)}
+                    onPress={(e) => {
+                        setLocation(e.nativeEvent.coordinate);
+                        setLocationSelected(null);
+                    }}
                 >
                     {location && <Marker coordinate={location} />}
                 </MapView>
@@ -293,6 +343,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 25,
         alignItems: "center",
+        marginBottom: 30,
     },
     buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 
