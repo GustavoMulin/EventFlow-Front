@@ -1,8 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    ScrollView,
+    Alert
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MapView, { Marker } from "react-native-maps";
 import api from "../api/api";
 
 const BASE_URL = "http://12.0.0.143:3000";
@@ -28,9 +37,10 @@ export default function EventDetailsScreen({ route, navigation }) {
                                 return;
                             }
 
-                            const response = await api.delete(`/events/${event._id}`, {
+                            await api.delete(`/events/${event._id}`, {
                                 headers: { Authorization: `Bearer ${token}` },
                             });
+
                             Alert.alert("Sucesso", "Evento excluído com sucesso!");
                             navigation.goBack();
                         } catch (error) {
@@ -47,12 +57,13 @@ export default function EventDetailsScreen({ route, navigation }) {
     };
 
     const imageSource = event.image
-        ? { uri: `${BASE_URL}${event.image}` }
+        ? { uri: `${BASE_URL}/${event.image.replace(/^\/+/, "")}` }
         : require("../assets/event-placeholder.jpg");
 
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
+
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={24} color="#007AFF" />
@@ -64,15 +75,50 @@ export default function EventDetailsScreen({ route, navigation }) {
 
                 <View style={styles.infoContainer}>
                     <Text style={styles.name}>{event.name}</Text>
+
                     {event.date && <Text style={styles.date}>📅 {event.date}</Text>}
+
                     {event.price ? (
                         <Text style={styles.price}>💰 R$ {event.price}</Text>
                     ) : (
                         <Text style={styles.price}>Evento gratuito</Text>
                     )}
+
+                    {event.category && (
+                        <Text style={styles.infoText}>🏷 Categoria: {event.category.name}</Text>
+                    )}
+
+                    {event.location && (
+                        <Text style={styles.infoText}>📍 Local: {event.location.address}</Text>
+                    )}
+
                     <Text style={styles.description}>
                         {event.description || "Sem descrição disponível."}
                     </Text>
+
+                    {event.latitude && event.longitude && (
+                        <>
+                            <Text style={styles.mapLabel}>Localização do Evento</Text>
+
+                            <MapView
+                                style={styles.map}
+                                initialRegion={{
+                                    latitude: Number(event.latitude),
+                                    longitude: Number(event.longitude),
+                                    latitudeDelta: 0.005,
+                                    longitudeDelta: 0.005,
+                                }}
+                            >
+                                <Marker
+                                    coordinate={{
+                                        latitude: Number(event.latitude),
+                                        longitude: Number(event.longitude),
+                                    }}
+                                    title={event.name}
+                                />
+                            </MapView>
+                        </>
+                    )}
 
                     <View style={styles.actions}>
                         <TouchableOpacity
@@ -139,12 +185,31 @@ const styles = StyleSheet.create({
     price: {
         fontSize: 16,
         color: "#007AFF",
-        marginBottom: 15,
+        marginBottom: 12,
+    },
+    infoText: {
+        fontSize: 16,
+        color: "#555",
+        marginBottom: 8,
     },
     description: {
         fontSize: 16,
         color: "#444",
         lineHeight: 22,
+        marginTop: 10,
+    },
+    mapLabel: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginTop: 20,
+        marginBottom: 10,
+        color: "#333",
+    },
+    map: {
+        width: "100%",
+        height: 200,
+        borderRadius: 12,
+        marginBottom: 20,
     },
     actions: {
         flexDirection: "row",
