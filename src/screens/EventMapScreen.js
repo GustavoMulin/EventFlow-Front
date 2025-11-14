@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import api from "../api/api";
@@ -6,6 +6,7 @@ import api from "../api/api";
 export default function EventMapScreen({ navigation }) {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const mapRef = useRef(null);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -22,6 +23,15 @@ export default function EventMapScreen({ navigation }) {
         fetchEvents();
     }, []);
 
+    const centerOnMarker = (lat, lng) => {
+        mapRef.current?.animateToRegion({
+            latitude: lat,
+            longitude: lng,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+        }, 600);
+    };
+
     if (loading) {
         return (
             <View style={styles.center}>
@@ -32,6 +42,7 @@ export default function EventMapScreen({ navigation }) {
 
     return (
         <MapView
+            ref={mapRef}
             style={styles.map}
             initialRegion={{
                 latitude: -8.76194,
@@ -48,7 +59,7 @@ export default function EventMapScreen({ navigation }) {
                             latitude: event.latitude,
                             longitude: event.longitude,
                         }}
-                        title={event.name}
+                        onPress={() => centerOnMarker(event.latitude, event.longitude)}
                     >
                         <Callout
                             onPress={() =>
@@ -57,10 +68,21 @@ export default function EventMapScreen({ navigation }) {
                         >
                             <View style={styles.callout}>
                                 <Text style={styles.calloutTitle}>{event.name}</Text>
-                                <Text style={styles.calloutText}>{event.date}</Text>
+                                <Text style={styles.calloutText}>📅 {event.date}</Text>
+
+                                {event.category?.name && (
+                                    <Text style={styles.calloutText}>🏷 Categoria: {event.category.name}</Text>
+                                )}
+
+                                {event.price !== undefined && (
+                                    <Text style={styles.calloutText}>💲 Preço: R$ {event.price}</Text>
+                                )}
 
                                 <TouchableOpacity
                                     style={styles.calloutButton}
+                                    onPress={() =>
+                                        navigation.navigate("EventDetails", { event })
+                                    }
                                 >
                                     <Text style={styles.calloutButtonText}>
                                         Ver Detalhes
@@ -85,20 +107,21 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     callout: {
-        width: 180,
+        width: 200,
         padding: 8,
     },
     calloutTitle: {
         fontWeight: "bold",
-        fontSize: 14,
+        fontSize: 15,
+        marginBottom: 4,
     },
     calloutText: {
-        marginTop: 3,
         fontSize: 12,
-        color: "#666",
+        color: "#444",
+        marginVertical: 2,
     },
     calloutButton: {
-        marginTop: 8,
+        marginTop: 10,
         backgroundColor: "#007AFF",
         paddingVertical: 6,
         borderRadius: 8,
